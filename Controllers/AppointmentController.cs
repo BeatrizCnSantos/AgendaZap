@@ -37,49 +37,65 @@ public class AppointmentController : ControllerBase
     [HttpPost]
     public IActionResult Create(CreateAppointmentDto dto)
     {
+        var appointmentDate = DateOnly.Parse(dto.AppointmentDate);
+        var appointmentTime = TimeOnly.Parse(dto.StartTime);
 
-        var existingAppointment = _context.Appointments
-        .FirstOrDefault(a =>
-        a.BusinessId == dto.BusinessId &&
-        a.AppointmentDate == DateOnly.Parse(dto.AppointmentDate) &&
-        a.StartTime == TimeOnly.Parse(dto.StartTime));
+        var service = _context.Services
+            .FirstOrDefault(s => s.Id == dto.ServiceId);
 
-        if (existingAppointment != null)
+        if (service == null)
         {
-            return BadRequest(new
-            {
-                message = "Horário já ocupado"
-            });
+            return BadRequest(new { message = "Serviço não encontrado" });
         }
 
+        var appointmentEndTime = appointmentTime.AddMinutes(service.DurationMinutes);
+
         var availability = _context.Availabilities
-        .FirstOrDefault(a =>
-        a.BusinessId == dto.BusinessId &&
-        a.DayOfWeek == DateOnly.Parse(dto.AppointmentDate).DayOfWeek);
+            .FirstOrDefault(a =>
+                a.BusinessId == dto.BusinessId &&
+                a.DayOfWeek == appointmentDate.DayOfWeek);
 
         if (availability == null)
         {
-            return BadRequest(new
-            {
-                message = "Empresa não atende nesse dia"
-            });
+            return BadRequest(new { message = "Empresa não atende nesse dia" });
         }
 
-        var appointmentTime = TimeOnly.Parse(dto.StartTime);
-
         if (appointmentTime < availability.StartTime ||
-            appointmentTime > availability.EndTime)
+            appointmentEndTime > availability.EndTime)
         {
-            return BadRequest(new
+            return BadRequest(new { message = "Horário fora do período de atendimento" });
+        }
+
+        var existingAppointments = _context.Appointments
+            .Where(a =>
+                a.BusinessId == dto.BusinessId &&
+                a.AppointmentDate == appointmentDate)
+            .ToList();
+
+        foreach (var existing in existingAppointments)
+        {
+            var existingService = _context.Services
+                .FirstOrDefault(s => s.Id == existing.ServiceId);
+
+            if (existingService == null)
+                continue;
+
+            var existingEndTime = existing.StartTime.AddMinutes(existingService.DurationMinutes);
+
+            bool overlap =
+                appointmentTime < existingEndTime &&
+                appointmentEndTime > existing.StartTime;
+
+            if (overlap)
             {
-                message = "Horário fora do período de atendimento"
-            });
+                return BadRequest(new { message = "Horário já ocupado" });
+            }
         }
 
         var appointment = new Appointment
         {
-            AppointmentDate = DateOnly.Parse(dto.AppointmentDate),
-            StartTime = TimeOnly.Parse(dto.StartTime),
+            AppointmentDate = appointmentDate,
+            StartTime = appointmentTime,
             CustomerId = dto.CustomerId,
             ServiceId = dto.ServiceId,
             BusinessId = dto.BusinessId
@@ -93,10 +109,10 @@ public class AppointmentController : ControllerBase
             appointment.Id,
             appointment.AppointmentDate,
             appointment.StartTime,
+            EndTime = appointmentEndTime,
             appointment.CustomerId,
             appointment.ServiceId,
             appointment.BusinessId
         });
-
-    }    
+    }
 }
