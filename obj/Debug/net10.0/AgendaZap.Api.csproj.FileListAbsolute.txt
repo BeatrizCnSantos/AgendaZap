@@ -124,3 +124,5 @@ C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\refint\AgendaZap.Api.dll
 C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\AgendaZap.Api.pdb
 C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\AgendaZap.Api.genruntimeconfig.cache
 C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\ref\AgendaZap.Api.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\appsettings.Example.json
+C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\AgendaZap.Api.sourcelink.json

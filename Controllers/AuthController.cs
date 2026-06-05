@@ -2,6 +2,7 @@ using AgendaZap.Api.Data;
 using AgendaZap.Api.DTOs;
 using AgendaZap.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaZap.Api.Controllers;
 
@@ -32,6 +33,37 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             message = "Usuário cadastrado com sucesso"
+        });
+    }
+
+    [HttpPost("login")]
+    public IActionResult Login(LoginDto dto)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
+
+        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+        {
+            return Unauthorized(new
+            {
+                message = "Email ou senha inválidos"
+            });
+        }
+
+        bool passwordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+
+        if (!passwordValid)
+        {
+            return Unauthorized(new
+            {
+                message = "Email ou senha inválidos"
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Login realizado com sucesso",
+            name = user.Name,
+            email = user.Email
         });
     }
 

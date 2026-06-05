@@ -11,4 +11,8 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
+
+    public DbSet<Business> Businesses => Set<Business>();
+    
+    public DbSet<Service> Services => Set<Service>();
 }
