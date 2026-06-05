@@ -126,3 +126,11 @@ C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\AgendaZap.Api.genruntimeconf
 C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\ref\AgendaZap.Api.dll
 C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\appsettings.Example.json
 C:\Windows\System32\AgendaZap.Api\obj\Debug\net10.0\AgendaZap.Api.sourcelink.json
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\Windows\System32\AgendaZap.Api\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll

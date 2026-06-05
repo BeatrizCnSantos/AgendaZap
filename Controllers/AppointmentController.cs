@@ -2,11 +2,14 @@ using AgendaZap.Api.Data;
 using AgendaZap.Api.DTOs;
 using AgendaZap.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AgendaZap.Api.Controllers;
 
+
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AppointmentController : ControllerBase
 {
     private readonly AppDbContext _context;
