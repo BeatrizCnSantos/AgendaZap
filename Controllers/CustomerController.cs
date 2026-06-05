@@ -30,4 +30,10 @@ public class CustomerController : ControllerBase
 
         return Ok(customer);
     }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_context.Customers.ToList());
+    }
 }

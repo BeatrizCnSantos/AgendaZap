@@ -18,4 +18,6 @@ public class AppDbContext : DbContext
     public DbSet<Availability> Availabilities => Set<Availability>();
 
     public DbSet<Customer> Customers => Set<Customer>();
+
+    public DbSet<Appointment> Appointments => Set<Appointment>();
 }

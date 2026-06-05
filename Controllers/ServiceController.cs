@@ -53,4 +53,10 @@ public class ServiceController : ControllerBase
             service.BusinessId
         });
     }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_context.Services.ToList());
+    }
 }
