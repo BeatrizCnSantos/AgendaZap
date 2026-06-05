@@ -43,4 +43,10 @@ public class BusinessController : ControllerBase
 
         return Ok(business);
     }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_context.Businesses.ToList());
+    }
 }
