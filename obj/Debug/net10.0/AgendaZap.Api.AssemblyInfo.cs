@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgendaZap.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a8805a85e6b9d43a0875d936cc72031831cdc64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ffc61435f6a49888e635f51e88fb5f89eac945a")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgendaZap.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgendaZap.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
