@@ -64,4 +64,87 @@ public class CustomerController : ControllerBase
             customer.Phone
         });
     }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, UpdateCustomerDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+    
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+    
+        var userId = Guid.Parse(userIdClaim.Value);
+    
+        var customer = _context.Appointments
+            .Where(a => a.Business.UserId == userId)
+            .Select(a => a.Customer)
+            .FirstOrDefault(c => c.Id == id);
+    
+        if (customer == null)
+        {
+            return NotFound(new
+            {
+                message = "Cliente não encontrado"
+            });
+        }
+    
+        customer.Name = dto.Name;
+        customer.Phone = dto.Phone;
+    
+        _context.SaveChanges();
+    
+        return Ok(new
+        {
+            customer.Id,
+            customer.Name,
+            customer.Phone
+        });
+    }    
+    
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+    
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+    
+        var userId = Guid.Parse(userIdClaim.Value);
+    
+        var customer = _context.Appointments
+            .Where(a => a.Business.UserId == userId)
+            .Select(a => a.Customer)
+            .FirstOrDefault(c => c.Id == id);
+    
+        if (customer == null)
+        {
+            return NotFound(new
+            {
+                message = "Cliente não encontrado"
+            });
+        }
+    
+        var hasAppointments = _context.Appointments
+            .Any(a => a.CustomerId == id);
+    
+        if (hasAppointments)
+        {
+            return BadRequest(new
+            {
+                message = "Cliente possui agendamentos cadastrados"
+            });
+        }
+    
+        _context.Customers.Remove(customer);
+        _context.SaveChanges();
+    
+        return Ok(new
+        {
+            message = "Cliente excluído com sucesso"
+        });
+    }
 }
