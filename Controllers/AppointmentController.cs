@@ -24,14 +24,14 @@ public class AppointmentController : ControllerBase
     public IActionResult GetAll()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-    
+
         if (userIdClaim == null)
         {
             return Unauthorized();
         }
-    
+
         var userId = Guid.Parse(userIdClaim.Value);
-    
+
         var appointments = _context.Appointments
             .Where(a => a.Business.UserId == userId)
             .Select(a => new
@@ -44,7 +44,7 @@ public class AppointmentController : ControllerBase
                 a.BusinessId
             })
             .ToList();
-    
+
         return Ok(appointments);
     }
 
@@ -127,6 +127,40 @@ public class AppointmentController : ControllerBase
             appointment.CustomerId,
             appointment.ServiceId,
             appointment.BusinessId
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
+
+        var appointment = _context.Appointments
+            .FirstOrDefault(a =>
+                a.Id == id &&
+                a.Business.UserId == userId);
+
+        if (appointment == null)
+        {
+            return NotFound(new
+            {
+                message = "Agendamento não encontrado"
+            });
+        }
+
+        _context.Appointments.Remove(appointment);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Agendamento cancelado com sucesso"
         });
     }
 }
