@@ -3,6 +3,7 @@ using AgendaZap.Api.DTOs;
 using AgendaZap.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace AgendaZap.Api.Controllers;
 
@@ -18,6 +19,32 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
+
+        var customers = _context.Appointments
+            .Where(a => a.Business.UserId == userId)
+            .Select(a => new
+            {
+                a.Customer.Id,
+                a.Customer.Name,
+                a.Customer.Phone
+            })
+            .Distinct()
+            .ToList();
+
+        return Ok(customers);
+    }
+
     [HttpPost]
     public IActionResult Create(CreateCustomerDto dto)
     {
@@ -30,12 +57,11 @@ public class CustomerController : ControllerBase
         _context.Customers.Add(customer);
         _context.SaveChanges();
 
-        return Ok(customer);
-    }
-
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(_context.Customers.ToList());
+        return Ok(new
+        {
+            customer.Id,
+            customer.Name,
+            customer.Phone
+        });
     }
 }

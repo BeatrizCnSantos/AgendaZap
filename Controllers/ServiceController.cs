@@ -3,6 +3,7 @@ using AgendaZap.Api.DTOs;
 using AgendaZap.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace AgendaZap.Api.Controllers;
 
@@ -59,6 +60,28 @@ public class ServiceController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        return Ok(_context.Services.ToList());
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+    
+        var userId = Guid.Parse(userIdClaim.Value);
+    
+        var services = _context.Services
+            .Where(s => s.Business.UserId == userId)
+            .Select(s => new
+            {
+                s.Id,
+                s.Name,
+                s.Description,
+                s.Price,
+                s.DurationMinutes,
+                s.BusinessId
+            })
+            .ToList();
+    
+        return Ok(services);
     }
 }
