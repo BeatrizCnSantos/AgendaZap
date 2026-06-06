@@ -1,22 +1,8 @@
-<<<<<<< HEAD
 bin/
 obj/
-
-.vs/
-.vscode/
-
-*.user
-*.suo
-
-appsettings.json
-appsettings.Development.json
-=======
 **/bin/
 **/obj/
+node_modules/
 **/node_modules/
-**/.vs/
-**/.vscode/
-
-**/appsettings.Development.json
+dist/
 **/dist/
->>>>>>> 38c6742 (feat: add frontend React application)
