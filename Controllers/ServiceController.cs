@@ -22,17 +22,28 @@ public class ServiceController : ControllerBase
     [HttpPost]
     public IActionResult Create(CreateServiceDto dto)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+    
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+    
+        var userId = Guid.Parse(userIdClaim.Value);
+    
         var business = _context.Businesses
-            .FirstOrDefault(b => b.Id == dto.BusinessId);
-
+            .FirstOrDefault(b =>
+                b.Id == dto.BusinessId &&
+                b.UserId == userId);
+    
         if (business == null)
         {
             return BadRequest(new
             {
-                message = "Empresa não encontrada"
+                message = "Empresa não encontrada ou não pertence ao usuário"
             });
         }
-
+    
         var service = new Service
         {
             Name = dto.Name,
@@ -41,10 +52,10 @@ public class ServiceController : ControllerBase
             DurationMinutes = dto.DurationMinutes,
             BusinessId = dto.BusinessId
         };
-
+    
         _context.Services.Add(service);
         _context.SaveChanges();
-
+    
         return Ok(new
         {
             service.Id,
@@ -56,7 +67,7 @@ public class ServiceController : ControllerBase
             service.BusinessId
         });
     }
-
+    
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -66,9 +77,9 @@ public class ServiceController : ControllerBase
         {
             return Unauthorized();
         }
-    
+
         var userId = Guid.Parse(userIdClaim.Value);
-    
+
         var services = _context.Services
             .Where(s => s.Business.UserId == userId)
             .Select(s => new
@@ -81,7 +92,7 @@ public class ServiceController : ControllerBase
                 s.BusinessId
             })
             .ToList();
-    
+
         return Ok(services);
     }
 }
