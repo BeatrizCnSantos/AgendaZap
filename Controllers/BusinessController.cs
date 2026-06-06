@@ -3,6 +3,8 @@ using AgendaZap.Api.DTOs;
 using AgendaZap.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace AgendaZap.Api.Controllers;
 
@@ -21,8 +23,17 @@ public class BusinessController : ControllerBase
     [HttpPost]
     public IActionResult Create(CreateBusinessDto dto)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }   
+
+        var userId = Guid.Parse(userIdClaim.Value);
+
         var user = _context.Users
-            .FirstOrDefault(u => u.Id == dto.UserId);
+            .FirstOrDefault(u => u.Id == userId);
 
         if (user == null)
         {
@@ -37,18 +48,38 @@ public class BusinessController : ControllerBase
             Name = dto.Name,
             WhatsAppNumber = dto.WhatsAppNumber,
             Slug = dto.Slug,
-            UserId = dto.UserId
+            UserId = userId
         };
 
         _context.Businesses.Add(business);
         _context.SaveChanges();
 
-        return Ok(business);
+        return Ok(new
+        {
+            business.Id,
+            business.Name,
+            business.WhatsAppNumber,
+            business.Slug,
+            business.UserId
+        });
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        return Ok(_context.Businesses.ToList());
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+        
+        var userId = Guid.Parse(userIdClaim.Value);
+        
+        var businesses = _context.Businesses
+            .Where(b => b.UserId == userId)
+            .ToList();
+        
+        return Ok(businesses);
     }
 }
