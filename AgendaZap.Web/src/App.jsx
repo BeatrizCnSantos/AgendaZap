@@ -5,6 +5,8 @@ import Services from "./pages/Services";
 import Customers from "./pages/Customers";
 import Appointments from "./pages/Appointments";
 import Availability from "./pages/Availability";
+import Businesses from "./pages/Businesses";
+import PublicBooking from "./pages/PublicBooking";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/customers" element={<Customers />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/availability" element={<Availability />} />
+        <Route path="/businesses" element={<Businesses />} />
+        <Route path="/agendar/:slug" element={<PublicBooking />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,9 +1,7 @@
-namespace AgendaZap.Api.Models;
+namespace AgendaZap.Api.DTOs;
 
-public class Business
+public class UpdateBusinessDto
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-
     public string Name { get; set; } = string.Empty;
 
     public string WhatsAppNumber { get; set; } = string.Empty;
@@ -18,11 +16,5 @@ public class Business
 
     public string Description { get; set; } = string.Empty;
 
-    public Guid UserId { get; set; }
-
-    public User User { get; set; } = null!;
-
-    public ICollection<Service> Services { get; set; } = new List<Service>();
-
-    public ICollection<Availability> Availabilities { get; set; } = new List<Availability>();
+    public string OpeningHours { get; set; } = string.Empty;
 }

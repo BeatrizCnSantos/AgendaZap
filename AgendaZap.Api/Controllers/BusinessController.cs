@@ -48,7 +48,11 @@ public class BusinessController : ControllerBase
             Name = dto.Name,
             WhatsAppNumber = dto.WhatsAppNumber,
             Slug = dto.Slug,
-            UserId = userId
+            UserId = userId,
+            LogoUrl = dto.LogoUrl,
+            Address = dto.Address,
+            Instagram = dto.Instagram,
+            Description = dto.Description,
         };
 
         _context.Businesses.Add(business);
@@ -60,6 +64,10 @@ public class BusinessController : ControllerBase
             business.Name,
             business.WhatsAppNumber,
             business.Slug,
+            business.LogoUrl,
+            business.Address,
+            business.Instagram,
+            business.Description,
             business.UserId
         });
     }
@@ -81,5 +89,55 @@ public class BusinessController : ControllerBase
             .ToList();
         
         return Ok(businesses);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, UpdateBusinessDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
+
+        var business = _context.Businesses
+            .FirstOrDefault(b =>
+                b.Id == id &&
+                b.UserId == userId);
+
+        if (business == null)
+        {
+            return NotFound(new
+            {
+                message = "Empresa não encontrada"
+            });
+        }
+
+        business.Name = dto.Name;
+        business.WhatsAppNumber = dto.WhatsAppNumber;
+        business.Slug = dto.Slug;
+        business.LogoUrl = dto.LogoUrl;
+        business.Address = dto.Address;
+        business.Instagram = dto.Instagram;
+        business.Description = dto.Description;
+
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            business.Id,
+            business.Name,
+            business.WhatsAppNumber,
+            business.Slug,
+            business.LogoUrl,
+            business.Address,
+            business.Instagram,
+            business.Description,
+
+            business.UserId
+        });
     }
 }

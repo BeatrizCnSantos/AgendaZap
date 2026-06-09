@@ -55,13 +55,15 @@ function Appointments() {
           return;
         }
 
-        await api.post("/Appointment", {
+        const response = await api.post("/Appointment", {
           appointmentDate: form.appointmentDate,
           startTime: form.startTime,
           customerId: form.customerId,
           serviceId: form.serviceId,
           businessId: businesses[0].id,
         });
+
+        window.open(response.data.whatsAppLink, "_blank");
 
         setMessage("Agendamento criado com sucesso!");
 

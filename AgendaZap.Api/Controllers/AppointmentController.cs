@@ -118,6 +118,18 @@ public class AppointmentController : ControllerBase
         _context.Appointments.Add(appointment);
         _context.SaveChanges();
 
+        var business = _context.Businesses
+            .FirstOrDefault(b => b.Id == dto.BusinessId);
+
+        var customer = _context.Customers
+            .FirstOrDefault(c => c.Id == dto.CustomerId);
+
+        var message = $"Olá {customer?.Name}, seu agendamento foi confirmado para {appointment.AppointmentDate} às {appointment.StartTime}.";
+
+        var encodedMessage = Uri.EscapeDataString(message);
+
+        var whatsAppLink = $"https://wa.me/{business?.WhatsAppNumber}?text={encodedMessage}";
+
         return Ok(new
         {
             appointment.Id,
@@ -126,7 +138,8 @@ public class AppointmentController : ControllerBase
             EndTime = appointmentEndTime,
             appointment.CustomerId,
             appointment.ServiceId,
-            appointment.BusinessId
+            appointment.BusinessId,
+            whatsAppLink
         });
     }
 

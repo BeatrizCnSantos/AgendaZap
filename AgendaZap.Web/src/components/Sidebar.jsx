@@ -29,7 +29,7 @@ function Sidebar() {
       >
         <Link to="/dashboard" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Dashboard</Link>
 
-        <Link to="/businesses" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Empresas</Link>
+        <Link to="/businesses" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Minha Empresa</Link>
 
         <Link to="/services" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Serviços</Link>
 
