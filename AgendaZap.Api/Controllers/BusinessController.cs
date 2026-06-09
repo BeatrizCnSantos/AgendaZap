@@ -10,8 +10,7 @@ namespace AgendaZap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//Pra facilitar os testes, a autenticação foi comentada. Para ativar, basta remover os comentários e garantir que o token JWT seja enviado no header Authorization das requisições.
-//[Authorize]
+[Authorize]
 public class BusinessController : ControllerBase
 {
     private readonly AppDbContext _context;

@@ -37,6 +37,8 @@ function Sidebar() {
 
         <Link to="/appointments" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Agendamentos</Link>
 
+        <Link to="/availability" style={{textDecoration: "none",color: colors.text, textAlign: "left"}}>Disponibilidade</Link>
+
         <button onClick={logout}
         style={{
         background: colors.primary,

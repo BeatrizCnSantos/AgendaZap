@@ -9,8 +9,7 @@ namespace AgendaZap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//Pra facilitar os testes, a autenticação foi comentada. Para ativar, basta remover os comentários e garantir que o token JWT seja enviado no header Authorization das requisições.
-//[Authorize]
+[Authorize]
 public class ServiceController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -72,7 +71,17 @@ public class ServiceController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
+
         var services = _context.Services
+            .Where(s => s.Business.UserId == userId)
             .Select(s => new
             {
                 s.Id,
@@ -86,32 +95,6 @@ public class ServiceController : ControllerBase
 
         return Ok(services);
     }
-    //public IActionResult GetAll()
-    //{
-    //    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-//
-    //    if (userIdClaim == null)
-    //    {
-    //        return Unauthorized();
-    //    }
-//
-    //    var userId = Guid.Parse(userIdClaim.Value);
-//
-    //    var services = _context.Services
-    //        .Where(s => s.Business.UserId == userId)
-    //        .Select(s => new
-    //        {
-    //            s.Id,
-    //            s.Name,
-    //            s.Description,
-    //            s.Price,
-    //            s.DurationMinutes,
-    //            s.BusinessId
-    //        })
-    //        .ToList();
-//
-    //    return Ok(services);
-    //}
 
     [HttpPut("{id}")]
     public IActionResult Update(Guid id, UpdateServiceDto dto)

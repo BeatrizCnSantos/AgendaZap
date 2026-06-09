@@ -8,7 +8,7 @@ public class Customer
 
     public string Phone { get; set; } = string.Empty;
 
-    public Guid BusinessId { get; set; }
+    public Guid? BusinessId { get; set; }
 
-    public Business Business { get; set; } = null!;
+    public Business? Business { get; set; }
 }

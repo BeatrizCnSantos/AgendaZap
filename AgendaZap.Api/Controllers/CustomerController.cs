@@ -9,8 +9,7 @@ namespace AgendaZap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//Pra facilitar os testes, a autenticação foi comentada. Para ativar, basta remover os comentários e garantir que o token JWT seja enviado no header Authorization das requisições.
-//[Authorize]
+[Authorize]
 public class CustomerController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -23,24 +22,14 @@ public class CustomerController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-
-        var userId = Guid.Parse(userIdClaim.Value);
-
-        var customers = _context.Appointments
-            .Where(a => a.Business.UserId == userId)
-            .Select(a => new
+        var customers = _context.Customers
+            .Select(c => new
             {
-                a.Customer.Id,
-                a.Customer.Name,
-                a.Customer.Phone
+                c.Id,
+                c.Name,
+                c.Phone
             })
-            .Distinct()
             .ToList();
 
         return Ok(customers);
@@ -69,20 +58,8 @@ public class CustomerController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult Update(Guid id, UpdateCustomerDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-    
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-    
-        var userId = Guid.Parse(userIdClaim.Value);
-    
-        var customer = _context.Appointments
-            .Where(a => a.Business.UserId == userId)
-            .Select(a => a.Customer)
-            .FirstOrDefault(c => c.Id == id);
-    
+        var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
+
         if (customer == null)
         {
             return NotFound(new
@@ -107,19 +84,7 @@ public class CustomerController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-    
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-    
-        var userId = Guid.Parse(userIdClaim.Value);
-    
-        var customer = _context.Appointments
-            .Where(a => a.Business.UserId == userId)
-            .Select(a => a.Customer)
-            .FirstOrDefault(c => c.Id == id);
+        var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
     
         if (customer == null)
         {
