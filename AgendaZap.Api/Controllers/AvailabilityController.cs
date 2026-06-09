@@ -91,4 +91,57 @@ public class AvailabilityController : ControllerBase
             availability.BusinessId
         });
     }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, UpdateAvailabilityDto dto)
+    {
+        var availability = _context.Availabilities
+            .FirstOrDefault(a => a.Id == id);
+
+        if (availability == null)
+        {
+            return NotFound(new
+            {
+                message = "Disponibilidade não encontrada"
+            });
+        }
+
+        availability.DayOfWeek = (DayOfWeek)dto.DayOfWeek;
+        availability.StartTime = TimeOnly.Parse(dto.StartTime);
+        availability.EndTime = TimeOnly.Parse(dto.EndTime);
+
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            availability.Id,
+            availability.DayOfWeek,
+            availability.StartTime,
+            availability.EndTime,
+            availability.BusinessId
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        var availability = _context.Availabilities
+            .FirstOrDefault(a => a.Id == id);
+
+        if (availability == null)
+        {
+            return NotFound(new
+            {
+                message = "Disponibilidade não encontrada"
+            });
+        }
+
+        _context.Availabilities.Remove(availability);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Disponibilidade excluída com sucesso"
+        });
+    }
 }

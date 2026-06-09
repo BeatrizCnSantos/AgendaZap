@@ -1,8 +1,8 @@
 namespace AgendaZap.Api.DTOs;
 
-public class UpdateAppointmentDto
+public class UpdateAvailabilityDto
 {
-    public string AppointmentDate { get; set; } = string.Empty;
+    public int DayOfWeek { get; set; }
 
     public string StartTime { get; set; } = string.Empty;
 

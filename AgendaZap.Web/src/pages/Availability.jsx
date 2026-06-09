@@ -6,6 +6,13 @@ import { colors } from "../styles/theme";
 function Availability() {
     const [ availability, setAvailability ] = useState([]);
     const [ businesses, setBusinesses ] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+
+    const [editForm, setEditForm] = useState({
+      dayOfWeek: "",
+      startTime: "",
+      endTime: "",
+    });
 
     const [form, setForm] = useState({
         dayOfWeek: "",
@@ -44,6 +51,36 @@ function Availability() {
         });
 
         loadData();
+    }
+
+    function startEdit(item) {
+      setEditingId(item.id);
+
+      setEditForm({
+        dayOfWeek: item.dayOfWeek,
+        startTime: item.startTime,
+        endTime: item.endTime,
+      });
+    }
+
+    async function updateAvailability(e) {
+      e.preventDefault();
+
+      await api.put(`/Availability/${editingId}`, {
+        dayOfWeek: Number(editForm.dayOfWeek),
+        startTime: editForm.startTime,
+        endTime: editForm.endTime,
+      });
+
+      setEditingId(null);
+      loadData();
+    }
+
+    async function deleteAvailability(id) {
+      if (!confirm("Deseja excluir este horário?")) return;
+
+      await api.delete(`/Availability/${id}`);
+      loadData();
     }
 
     const days = [
@@ -106,15 +143,67 @@ function Availability() {
 
                 <div style={{ display: "grid", gap: "15px" }}>
                     {availability.map((item) => (
-                        <div key={item.id} style={{
+                        <div
+                          key={item.id}
+                          style={{
                             background: colors.card,
                             padding: "20px",
                             borderRadius: "12px",
-                        }}>
-                            <h3>{days[item.dayOfWeek]}</h3>
-                            <p>
+                            textAlign: "center",
+                          }}
+                        >
+                          {editingId === item.id ? (
+                            <form onSubmit={updateAvailability}>
+                              <select
+                                value={editForm.dayOfWeek}
+                                onChange={(e) =>
+                                  setEditForm({ ...editForm, dayOfWeek: e.target.value })
+                                }
+                              >
+                                {days.map((day, index) => (
+                                  <option key={index} value={index}>
+                                    {day}
+                                  </option>
+                                ))}
+                              </select>
+                            
+                              <input
+                                type="time"
+                                value={editForm.startTime}
+                                onChange={(e) =>
+                                  setEditForm({ ...editForm, startTime: e.target.value })
+                                }
+                              />
+
+                              <input
+                                type="time"
+                                value={editForm.endTime}
+                                onChange={(e) =>
+                                  setEditForm({ ...editForm, endTime: e.target.value })
+                                }
+                              />
+
+                              <button type="submit">Salvar</button>
+                            
+                              <button type="button" onClick={() => setEditingId(null)}>
+                                Cancelar
+                              </button>
+                            </form>
+                          ) : (
+                            <>
+                              <h3>{days[item.dayOfWeek]}</h3>
+                        
+                              <p>
                                 {item.startTime} - {item.endTime}
-                            </p>
+                              </p>
+                        
+                              <button onClick={() => startEdit(item)}>Editar</button>
+                        
+                              <button onClick={() => deleteAvailability(item.id)}>
+                                Excluir
+                              </button>
+                            </>
+                          )}
                         </div>
                     ))}
                 </div>
