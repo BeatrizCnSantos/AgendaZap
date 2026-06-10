@@ -51,7 +51,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.Availability", b =>
@@ -76,7 +76,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Availabilities");
+                    b.ToTable("Availabilities", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.Business", b =>
@@ -124,7 +124,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Businesses");
+                    b.ToTable("Businesses", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.Customer", b =>
@@ -148,7 +148,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.Service", b =>
@@ -181,7 +181,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.User", b =>
@@ -207,7 +207,7 @@ namespace AgendaZap.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("AgendaZap.Api.Models.Appointment", b =>

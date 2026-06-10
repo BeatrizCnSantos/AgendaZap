@@ -32,6 +32,17 @@ public class BusinessController : ControllerBase
 
         var userId = Guid.Parse(userIdClaim.Value);
 
+        var alreadyHasBusiness = _context.Businesses
+            .Any(b => b.UserId == userId);
+
+        if (alreadyHasBusiness)
+        {
+            return BadRequest(new
+            {
+                message = "Este usuário já possui uma empresa cadastrada"
+            });
+        }
+
         var user = _context.Users
             .FirstOrDefault(u => u.Id == userId);
 
@@ -138,6 +149,58 @@ public class BusinessController : ControllerBase
             business.Description,
 
             business.UserId
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id, DeleteBusinessDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+    
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+    
+        var userId = Guid.Parse(userIdClaim.Value);
+    
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+    
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+    
+        var passwordIsValid = BCrypt.Net.BCrypt.Verify(
+            dto.Password,
+            user.PasswordHash
+        );
+    
+        if (!passwordIsValid)
+        {
+            return BadRequest(new
+            {
+                message = "Senha incorreta"
+            });
+        }
+    
+        var business = _context.Businesses
+            .FirstOrDefault(b => b.Id == id && b.UserId == userId);
+    
+        if (business == null)
+        {
+            return NotFound(new
+            {
+                message = "Empresa não encontrada"
+            });
+        }
+    
+        _context.Businesses.Remove(business);
+        _context.SaveChanges();
+    
+        return Ok(new
+        {
+            message = "Empresa excluída com sucesso"
         });
     }
 }

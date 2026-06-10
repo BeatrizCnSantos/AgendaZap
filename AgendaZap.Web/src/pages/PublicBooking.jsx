@@ -15,11 +15,23 @@ function PublicBooking() {
     startTime: "",
   });
 
+  const [availableSlots, setAvailableSlots] = useState([]);
+
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     loadBusiness();
   }, []);
+
+  async function loadAvailableSlots(serviceId, date) {
+    if (!serviceId || !date) return;
+
+    const response = await api.get(
+      `/public/booking/${slug}/slots?serviceId=${serviceId}&date=${date}`
+    );
+
+    setAvailableSlots(response.data);
+  }
 
   async function loadBusiness() {
     try {
@@ -59,6 +71,16 @@ function PublicBooking() {
     }
   }
 
+  const days = [
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+  ];
+
   if (!business) {
     return (
       <div
@@ -94,8 +116,48 @@ function PublicBooking() {
           borderRadius: "16px",
         }}
       >
+        {business.logoUrl && (
+          <img
+            src={business.logoUrl}
+            alt={business.name}
+            style={{
+              width: "120px",
+              height: "120px",
+              objectFit: "cover",
+              borderRadius: "50%",
+              marginBottom: "20px",
+            }}
+          />
+          )}
+
         <h1>{business.name}</h1>
         <p>Agende seu horário online</p>
+
+        {business.description && <p>{business.description}</p>}
+
+        {business.address && <p>📍 {business.address}</p>}
+
+        {business.instagram && <p>📸 {business.instagram}</p>}
+
+        {business.availabilities?.length > 0 && (
+          <div
+            style={{
+              background: colors.card,
+              padding: "20px",
+              borderRadius: "12px",
+              marginTop: "20px",
+              marginBottom: "20px",
+            }}
+          >
+            <h3>Horários de Atendimento</h3>
+          
+            {business.availabilities.map((item) => (
+              <p key={item.id}>
+                {days[item.dayOfWeek]}: {item.startTime.slice(0, 5)} - {item.endTime.slice(0, 5)}
+              </p>
+            ))}
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}
@@ -107,9 +169,13 @@ function PublicBooking() {
         >
           <select
             value={form.serviceId}
-            onChange={(e) =>
-              setForm({ ...form, serviceId: e.target.value })
-            }
+            onChange={(e) => {
+              const serviceId = e.target.value;
+
+              setForm({ ...form, serviceId, startTime: "" });
+
+              loadAvailableSlots(serviceId, form.appointmentDate);
+            }}
             required
           >
             <option value="">Escolha o serviço</option>
@@ -138,20 +204,31 @@ function PublicBooking() {
           <input
             type="date"
             value={form.appointmentDate}
-            onChange={(e) =>
-              setForm({ ...form, appointmentDate: e.target.value })
-            }
+            onChange={(e) =>{
+              const appointmentDate = e.target.value;
+
+              setForm({ ...form, appointmentDate, startTime: "" });
+              
+              loadAvailableSlots(form.serviceId, appointmentDate);
+            }}
             required
           />
 
-          <input
-            type="time"
+          <select
             value={form.startTime}
             onChange={(e) =>
               setForm({ ...form, startTime: e.target.value })
             }
             required
-          />
+          >
+            <option value="">Escolha um horário</option>
+          
+            {availableSlots.map((slot) => (
+              <option key={slot} value={slot}>
+                {slot}
+              </option>
+            ))}
+          </select>
 
           <button
             type="submit"

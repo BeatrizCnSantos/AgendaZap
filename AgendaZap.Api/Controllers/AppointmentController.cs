@@ -10,7 +10,7 @@ namespace AgendaZap.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
 public class AppointmentController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -21,26 +21,34 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet]
+
+    [HttpGet]
     public IActionResult GetAll()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-
-        var userId = Guid.Parse(userIdClaim.Value);
-
+    //    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+//
+    //    if (userIdClaim == null)
+    //    {
+    //        return Unauthorized();
+    //    }
+    //    
+//
+    //    var userId = Guid.Parse(userIdClaim.Value);
+//
         var appointments = _context.Appointments
-            .Where(a => a.Business.UserId == userId)
             .Select(a => new
             {
                 a.Id,
                 a.AppointmentDate,
                 a.StartTime,
+
                 a.CustomerId,
+                CustomerName = a.Customer.Name,
+                CustomerPhone = a.Customer.Phone,
+
                 a.ServiceId,
+                ServiceName = a.Service.Name,
+
                 a.BusinessId
             })
             .ToList();

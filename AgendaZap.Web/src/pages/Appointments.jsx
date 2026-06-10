@@ -17,18 +17,26 @@ function Appointments() {
     startTime: "",
   });
 
+  const [rescheduleId, setRescheduleId] = useState(null);
+
+  const [rescheduleForm, setRescheduleForm] = useState({
+    appointmentDate: "",
+    startTime: "",
+    reason: "",
+  });
+
   useEffect(() => {
     loadData();
   }, []);
 
   useEffect(() => {
-      if (!message) return;
+    if (!message) return;
 
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 3000);
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
 
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [message]);
 
   async function loadData() {
@@ -47,49 +55,109 @@ function Appointments() {
   }
 
   async function createAppointment(e) {
-      e.preventDefault();
-
-      try {
-        if (businesses.length === 0) {
-          setMessage("Cadastre uma empresa antes de criar agendamentos.");
-          return;
-        }
-
-        const response = await api.post("/Appointment", {
-          appointmentDate: form.appointmentDate,
-          startTime: form.startTime,
-          customerId: form.customerId,
-          serviceId: form.serviceId,
-          businessId: businesses[0].id,
-        });
-
-        window.open(response.data.whatsAppLink, "_blank");
-
-        setMessage("Agendamento criado com sucesso!");
-
-        setForm({
-          customerId: "",
-          serviceId: "",
-          appointmentDate: "",
-          startTime: "",
-        });
-
-        loadData();
-      } catch (error) {
-        setMessage(error.response?.data?.message || "Erro ao criar agendamento.");
-      }
-  }
-
-  async function deleteAppointment(id) {
-    if (!confirm("Deseja cancelar este agendamento?")) return;
+    e.preventDefault();
 
     try {
-      await api.delete(`/Appointment/${id}`);
-      setMessage("Agendamento cancelado com sucesso!");
+      if (businesses.length === 0) {
+        setMessage("Cadastre uma empresa antes de criar agendamentos.");
+        return;
+      }
+
+      const response = await api.post("/Appointment", {
+        appointmentDate: form.appointmentDate,
+        startTime: form.startTime,
+        customerId: form.customerId,
+        serviceId: form.serviceId,
+        businessId: businesses[0].id,
+      });
+
+      if (response.data.whatsAppLink) {
+        window.open(response.data.whatsAppLink, "_blank");
+      }
+
+      setMessage("Agendamento criado com sucesso!");
+
+      setForm({
+        customerId: "",
+        serviceId: "",
+        appointmentDate: "",
+        startTime: "",
+      });
+
       loadData();
     } catch (error) {
-      setMessage(error.response?.data?.message || "Erro ao cancelar agendamento.");
+      setMessage(error.response?.data?.message || "Erro ao criar agendamento.");
     }
+  }
+
+  async function cancelAppointment(appointment) {
+    const reason = prompt("Informe o motivo do cancelamento:");
+
+    if (!reason) return;
+
+    const confirmCancel = confirm(
+      "Tem certeza que deseja cancelar este agendamento?"
+    );
+
+    if (!confirmCancel) return;
+
+    if (!appointment.customerPhone) {
+      alert("Cliente não possui telefone cadastrado.");
+      return;
+    }
+
+    const phone = `55${appointment.customerPhone.replace(/\D/g, "")}`;
+
+    const text =
+      `Olá ${appointment.customerName}, seu agendamento de ${appointment.serviceName} no dia ${appointment.appointmentDate} às ${appointment.startTime.slice(0, 5)} foi cancelado. Motivo: ${reason}`;
+
+    const whatsappUrl =
+      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+
+    window.open(whatsappUrl, "_blank");
+
+    await api.delete(`/Appointment/${appointment.id}`);
+
+    setMessage("Agendamento cancelado com sucesso!");
+    loadData();
+  }
+
+  function startReschedule(appointment) {
+    setRescheduleId(appointment.id);
+
+    setRescheduleForm({
+      appointmentDate: appointment.appointmentDate,
+      startTime: appointment.startTime?.slice(0, 5),
+      reason: "",
+    });
+  }
+
+  async function rescheduleAppointment(e, appointment) {
+    e.preventDefault();
+
+    if (!appointment.customerPhone) {
+      alert("Cliente não possui telefone cadastrado.");
+      return;
+    }
+
+    const phone = `55${appointment.customerPhone.replace(/\D/g, "")}`;
+
+    await api.put(`/Appointment/${appointment.id}`, {
+      appointmentDate: rescheduleForm.appointmentDate,
+      startTime: rescheduleForm.startTime,
+    });
+
+    const text =
+      `Olá ${appointment.customerName}, seu agendamento de ${appointment.serviceName} foi remarcado para ${rescheduleForm.appointmentDate} às ${rescheduleForm.startTime}. Motivo: ${rescheduleForm.reason}`;
+
+    const whatsappUrl =
+      `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+
+    window.open(whatsappUrl, "_blank");
+
+    setRescheduleId(null);
+    setMessage("Agendamento remarcado com sucesso!");
+    loadData();
   }
 
   function getCustomerName(id) {
@@ -137,6 +205,7 @@ function Appointments() {
             required
           >
             <option value="">Selecione o cliente</option>
+
             {customers.map((customer) => (
               <option key={customer.id} value={customer.id}>
                 {customer.name}
@@ -152,6 +221,7 @@ function Appointments() {
             required
           >
             <option value="">Selecione o serviço</option>
+
             {services.map((service) => (
               <option key={service.id} value={service.id}>
                 {service.name}
@@ -182,20 +252,20 @@ function Appointments() {
 
         {message && (
           <div
-              style={{
-                position: "fixed",
-                top: "20px",
-                right: "20px",
-                background: "#3307fc54",
-                color: "white",
-                padding: "12px 20px",
-                borderRadius: "8px",
-                fontWeight: "bold",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-              }}
-            >
-              {message}
-            </div>
+            style={{
+              position: "fixed",
+              top: "20px",
+              right: "20px",
+              background: "#3307fc54",
+              color: "white",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              fontWeight: "bold",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+            }}
+          >
+            {message}
+          </div>
         )}
 
         <div style={{ display: "grid", gap: "15px" }}>
@@ -209,18 +279,88 @@ function Appointments() {
                 textAlign: "center",
               }}
             >
-              <h2>{getCustomerName(appointment.customerId)}</h2>
+              <h2>
+                {appointment.customerName ||
+                  getCustomerName(appointment.customerId)}
+              </h2>
 
-              <p>{getServiceName(appointment.serviceId)}</p>
+              <p>
+                {appointment.serviceName ||
+                  getServiceName(appointment.serviceId)}
+              </p>
 
               <p>
                 {appointment.appointmentDate} às{" "}
-                {appointment.startTime}
+                {appointment.startTime.slice(0, 5)}
               </p>
 
-              <button onClick={() => deleteAppointment(appointment.id)}>
+              <button onClick={() => startReschedule(appointment)}>
+                Remarcar
+              </button>
+
+              <button onClick={() => cancelAppointment(appointment)}>
                 Cancelar
               </button>
+
+              {rescheduleId === appointment.id && (
+                <form
+                  onSubmit={(e) =>
+                    rescheduleAppointment(e, appointment)
+                  }
+                  style={{
+                    marginTop: "20px",
+                    display: "grid",
+                    gap: "10px",
+                  }}
+                >
+                  <input
+                    type="date"
+                    value={rescheduleForm.appointmentDate}
+                    onChange={(e) =>
+                      setRescheduleForm({
+                        ...rescheduleForm,
+                        appointmentDate: e.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <input
+                    type="time"
+                    value={rescheduleForm.startTime}
+                    onChange={(e) =>
+                      setRescheduleForm({
+                        ...rescheduleForm,
+                        startTime: e.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <textarea
+                    placeholder="Motivo da remarcação"
+                    value={rescheduleForm.reason}
+                    onChange={(e) =>
+                      setRescheduleForm({
+                        ...rescheduleForm,
+                        reason: e.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <button type="submit">
+                    Confirmar Remarcação
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRescheduleId(null)}
+                  >
+                    Fechar
+                  </button>
+                </form>
+              )}
             </div>
           ))}
         </div>

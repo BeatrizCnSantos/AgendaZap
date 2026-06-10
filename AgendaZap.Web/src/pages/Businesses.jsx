@@ -47,23 +47,31 @@ function Businesses() {
       name: form.name,
       whatsAppNumber: form.whatsAppNumber,
       slug: form.slug,
+      logoUrl: form.logoUrl,
+      address: form.address,
+      instagram: form.instagram,
+      description: form.description,
+      openingHours: form.openingHours,
     });
 
     setForm({
       name: "",
       whatsAppNumber: "",
       slug: "",
+      logoUrl: "",
+      address: "",
+      instagram: "",
+      description: "",
+      openingHours: "",
     });
 
     loadBusinesses();
   }
 
     async function updateBusiness(e) {
-      e.preventDefault();
+     e.preventDefault();
 
-      if (businesses.length === 0) return;
-
-      await api.put(`/Business/${businesses[0].id}`, {
+      const response = await api.put(`/Business/${businesses[0].id}`, {
         name: form.name,
         whatsAppNumber: form.whatsAppNumber,
         slug: form.slug,
@@ -73,8 +81,54 @@ function Businesses() {
         description: form.description,
         openingHours: form.openingHours,
       });
-
-      loadBusinesses();
+    
+      setBusinesses([response.data]);
+    
+      setForm({
+        name: response.data.name || "",
+        whatsAppNumber: response.data.whatsAppNumber || "",
+        slug: response.data.slug || "",
+        logoUrl: response.data.logoUrl || "",
+        address: response.data.address || "",
+        instagram: response.data.instagram || "",
+        description: response.data.description || "",
+        openingHours: response.data.openingHours || "",
+      });
+    
+      setMessage("Empresa atualizada com sucesso!");
+        }
+      
+        async function deleteBusiness() {
+          const password = prompt("Digite sua senha para excluir a empresa:");
+        
+          if (!password) return;
+        
+          const confirmDelete = confirm(
+            "Tem certeza que deseja excluir sua empresa? Essa ação não pode ser desfeita."
+          );
+        
+          if (!confirmDelete) return;
+        
+          await api.delete(`/Business/${businesses[0].id}`, {
+            data: {
+              password,
+            },
+          });
+        
+          setBusinesses([]);
+        
+          setForm({
+            name: "",
+            whatsAppNumber: "",
+            slug: "",
+            logoUrl: "",
+            address: "",
+            instagram: "",
+            description: "",
+            openingHours: "",
+          });
+        
+        setMessage("Empresa excluída com sucesso!");
     }
 
   return (
@@ -156,9 +210,24 @@ function Businesses() {
             }
           />  
 
-          <button type="submit">
-            {businesses.length > 0 ? "Atualizar Empresa" : "Criar Empresa"}
-          </button>
+          {businesses.length === 0 ? (
+            <button type="submit">
+              Criar Empresa
+            </button>
+          ) : (
+            <>
+              <button type="submit">
+                Atualizar Empresa
+              </button>
+          
+              <button
+                type="button"
+                onClick={deleteBusiness}
+              >
+                Excluir Empresa
+              </button>
+            </>
+          )}
         </form>
 
         <div style={{ display: "grid", gap: "15px" }}>
@@ -172,53 +241,88 @@ function Businesses() {
                 textAlign: "center",
               }}
             >
-              <h2>{business.name}</h2>
-              <p>WhatsApp: {business.whatsAppNumber}</p>
-              <p>Link público de agendamento:</p>
-              <div
+              {business.logoUrl && (
+                <img
+                  src={business.logoUrl}
+                  alt={business.name}
                   style={{
-                    marginTop: "15px",
-                    display: "flex",
-                    gap: "10px",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexWrap: "wrap",
+                    width: "120px",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    marginBottom: "15px",
+                  }}
+                />
+              )}
+
+              <h2>{business.name}</h2>
+            
+              {business.description && (
+                <p style={{ marginBottom: "10px" }}>
+                  {business.description}
+                </p>
+              )}
+
+              <p>WhatsApp: {business.whatsAppNumber}</p>
+            
+              {business.address && (
+                <p>{business.address}</p>
+              )}
+
+              {business.instagram && (
+                <p>@{business.instagram}</p>
+              )}
+      
+              <p style={{ marginTop: "15px" }}>
+                Link público de agendamento:
+              </p>
+            
+              <div
+                style={{
+                  marginTop: "15px",
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <input
+                  value={`${window.location.origin}/agendar/${business.slug}`}
+                  readOnly
+                  style={{
+                    width: "350px",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                  }}
+                />
+
+                <button
+                  onClick={() =>
+                    window.open(
+                      `${window.location.origin}/agendar/${business.slug}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  Abrir
+                </button>
+                
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/agendar/${business.slug}`
+                    );
+                  
+                    setMessage("Link copiado!");
                   }}
                 >
-                  <input
-                    value={`${window.location.origin}/agendar/${business.slug}`}
-                    readOnly
-                    style={{
-                      width: "350px",
-                      padding: "10px",
-                      borderRadius: "8px",
-                      border: "none",
-                    }}
-                  />
-
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `${window.location.origin}/agendar/${business.slug}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    Abrir
-                  </button>
-                
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        `${window.location.origin}/agendar/${business.slug}`
-                      );
-                    }}
-                  >
-                    Copiar
-                  </button>
-                </div>
-        </div>
-        ))}
+                  Copiar
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
     </div>

@@ -194,7 +194,7 @@ function Availability() {
                               <h3>{days[item.dayOfWeek]}</h3>
                         
                               <p>
-                                {item.startTime} - {item.endTime}
+                                {item.startTime.slice(0, 5)} - {item.endTime.slice(0, 5)}
                               </p>
                         
                               <button onClick={() => startEdit(item)}>Editar</button>

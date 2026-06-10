@@ -11,18 +11,6 @@ namespace AgendaZap.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Customers_Businesses_BusinessId",
-                table: "Customers");
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "BusinessId",
-                table: "Customers",
-                type: "uuid",
-                nullable: true,
-                oldClrType: typeof(Guid),
-                oldType: "uuid");
-
             migrationBuilder.AddColumn<string>(
                 name: "Address",
                 table: "Businesses",
@@ -57,22 +45,11 @@ namespace AgendaZap.Api.Migrations
                 type: "text",
                 nullable: false,
                 defaultValue: "");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Customers_Businesses_BusinessId",
-                table: "Customers",
-                column: "BusinessId",
-                principalTable: "Businesses",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Customers_Businesses_BusinessId",
-                table: "Customers");
-
             migrationBuilder.DropColumn(
                 name: "Address",
                 table: "Businesses");
@@ -92,24 +69,6 @@ namespace AgendaZap.Api.Migrations
             migrationBuilder.DropColumn(
                 name: "OpeningHours",
                 table: "Businesses");
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "BusinessId",
-                table: "Customers",
-                type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
-                oldClrType: typeof(Guid),
-                oldType: "uuid",
-                oldNullable: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Customers_Businesses_BusinessId",
-                table: "Customers",
-                column: "BusinessId",
-                principalTable: "Businesses",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
     }
 }
