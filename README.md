@@ -1,152 +1,162 @@
-# 🚀 AgendaZap
+# AgendaZap
 
-Sistema SaaS de agendamento online desenvolvido com ASP.NET Core e PostgreSQL.
+Sistema de agendamento online com integração ao WhatsApp, desenvolvido em ASP.NET Core, Entity Framework Core, PostgreSQL e React.
 
-O AgendaZap permite que profissionais autônomos e pequenos negócios gerenciem seus serviços, horários disponíveis, clientes e agendamentos em uma única plataforma.
+## Sobre o Projeto
 
-## 📌 Funcionalidades
+O AgendaZap permite que empresas criem uma página pública de agendamento, onde clientes podem escolher serviços, visualizar horários disponíveis e realizar agendamentos de forma simples. Após o agendamento, o sistema gera automaticamente uma mensagem para o WhatsApp.
+
+O projeto foi desenvolvido com foco em pequenas empresas, profissionais autônomos, salões de beleza, barbearias e prestadores de serviços.
+
+---
+
+## Tecnologias Utilizadas
+
+### Backend
+
+* ASP.NET Core Web API
+* Entity Framework Core
+* PostgreSQL
+* JWT Authentication
+* BCrypt Password Hashing
+
+### Frontend
+
+* React
+* Axios
+* React Router
+* CSS
+
+---
+
+## Funcionalidades
 
 ### Autenticação
 
 * Cadastro de usuários
-* Login com senha criptografada utilizando BCrypt
+* Login com JWT
+* Rotas protegidas
 
-### Empresas
+### Minha Empresa
 
-* Cadastro de empresas
-* Associação entre usuário e empresa
+* Criar empresa
+* Atualizar empresa
+* Excluir empresa com confirmação
+* Apenas uma empresa por usuário
+* Link público de agendamento
+* Copiar link público
+
+### Perfil da Empresa
+
+* Nome
+* WhatsApp
+* Slug personalizado
+* Logo
+* Endereço
+* Instagram
+* Descrição
+* Horário de funcionamento
 
 ### Serviços
 
-* Cadastro de serviços
-* Preço e duração configuráveis
-
-### Disponibilidade
-
-* Configuração de dias e horários de atendimento
-* Validação de horários disponíveis
+* Criar serviço
+* Editar serviço
+* Excluir serviço
+* Definir duração
+* Definir preço
+* Ativar ou desativar serviço
 
 ### Clientes
 
-* Cadastro de clientes
+* Criar cliente
+* Editar cliente
+* Excluir cliente
+
+### Disponibilidade
+
+* Criar horários de atendimento
+* Editar horários
+* Excluir horários
 
 ### Agendamentos
 
-* Criação de agendamentos
-* Listagem de agendamentos
-* Bloqueio de horários duplicados
-* Validação de horário de atendimento
+* Criar agendamento
+* Remarcar agendamento
+* Cancelar agendamento
+* Validação de conflitos de horário
+* Validação de disponibilidade
+* Envio de mensagens via WhatsApp para o cliente
+* Motivo de cancelamento
+* Motivo de remarcação
 
-## 🛠️ Tecnologias Utilizadas
+### Página Pública
 
-### Back-end
+Cada empresa possui uma página pública própria:
 
-* C#
-* ASP.NET Core
-* Entity Framework Core
-* PostgreSQL
-* BCrypt
+```txt
+/agendar/{slug}
+```
 
-### Ferramentas
+Nela o cliente pode:
 
-* Swagger
-* Git
-* GitHub
+* Visualizar informações da empresa
+* Visualizar horários de atendimento
+* Escolher um serviço
+* Escolher uma data
+* Selecionar horários disponíveis
+* Informar seus dados
+* Confirmar o agendamento
 
-## 🗄️ Estrutura do Projeto
+---
 
-```text
-AgendaZap
+## Regras de Negócio
+
+* Um usuário pode possuir apenas uma empresa.
+* Horários indisponíveis não são exibidos ao cliente.
+* Não é possível criar agendamentos sobrepostos.
+* O horário deve respeitar a disponibilidade cadastrada.
+* A duração do serviço é considerada no cálculo dos horários livres.
+
+---
+
+## Estrutura do Projeto
+
+```txt
+AgendaZap.Api
 ├── Controllers
-├── Models
 ├── DTOs
 ├── Data
-├── Services
+├── Models
 ├── Migrations
-└── Program.cs
+
+AgendaZap.Web
+├── src
+│   ├── pages
+│   ├── components
+│   ├── api
+│   └── styles
 ```
 
-## 📚 Entidades Implementadas
+---
 
-* User
-* Business
-* Service
-* Availability
-* Customer
-* Appointment
+## Próximas Funcionalidades
 
-## 🔄 Fluxo de Funcionamento
+* Integração completa com WhatsApp Business
+* Dashboard com métricas
+* Upload de imagens
+* Notificações automáticas
+* Confirmação automática de agendamento
+* Recuperação de senha
+* Multiempresa
+* Responsividade mobile avançada
 
-```text
-Usuário
- ↓
-Empresa
- ↓
-Serviços
- ↓
-Disponibilidade
- ↓
-Clientes
- ↓
-Agendamentos
-```
+---
 
-## 📖 API Documentation
+## Status do Projeto
 
-Após executar o projeto:
+🚀 Em desenvolvimento ativo.
 
-```bash
-dotnet run
-```
-
-A documentação Swagger estará disponível em:
-
-```text
-http://localhost:5197/swagger
-```
-
-## ⚙️ Como Executar
-
-### Clonar o repositório
-
-```bash
-git clone https://github.com/BeatrizCnSantos/AgendaZap.git
-```
-
-### Entrar na pasta
-
-```bash
-cd AgendaZap
-```
-
-### Restaurar dependências
-
-```bash
-dotnet restore
-```
-
-### Aplicar migrations
-
-```bash
-dotnet ef database update
-```
-
-### Executar o projeto
-
-```bash
-dotnet run
-```
-
-## 🚧 Próximas Funcionalidades
-
-* Autenticação JWT
-* Dashboard administrativo
-* Front-end com React
-* Integração com WhatsApp
-* Controle de duração dos serviços
-* Bloqueio de conflitos de horários
-* Página pública de agendamento
-* Planos e assinaturas
+Versão atual: MVP funcional com fluxo completo de agendamento online.
 
 ## 👩‍💻 Desenvolvido por
 
